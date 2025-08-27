@@ -25,7 +25,7 @@ export class UserService {
     });
   }
 
-  findAll() {
+  login() {
     return `This action returns all user`;
   }
 

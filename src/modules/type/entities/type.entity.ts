@@ -1,10 +1,24 @@
-import { Column, DataType, HasMany, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsToMany,
+  Column,
+  HasMany,
+  Model,
+  Table,
+} from 'sequelize-typescript';
+import { DataTypes } from 'sequelize';
 import { Device } from '../../device/entities/device.entity';
+import { Brand } from '../../brand/entities/brand.entity';
+import { BrandType } from '../../brand/entities/brand-type.entity';
 
-@Table
-export class Type extends Model {
-  @Column({ type: DataType.STRING, unique: true, allowNull: false })
+interface TypeAttribute {
   name: string;
-  @HasMany(() => Device, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+}
+@Table({ tableName: 'types' })
+export class Type extends Model<Type, TypeAttribute> {
+  @Column({ type: DataTypes.STRING, unique: true, allowNull: false })
+  name: string;
+  @HasMany(() => Device)
   devices: Device[];
+  @BelongsToMany(() => Brand, () => BrandType)
+  brandTypes: BrandType[];
 }

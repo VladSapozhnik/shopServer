@@ -1,19 +1,26 @@
 import {
-  Table,
-  Model,
   BelongsTo,
+  BelongsToMany,
   Column,
-  DataType, ForeignKey, HasMany,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
 } from 'sequelize-typescript';
 import { User } from '../../user/entities/user.entity';
-import { BasketDevice } from '../../basket-device/entities/basket-device.entity';
-@Table
+
+import { Device } from '../../device/entities/device.entity';
+import { BasketDevice } from './basket-device.entity';
+@Table({ tableName: 'baskets' })
 export class Basket extends Model {
   @ForeignKey(() => User)
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
   userId: number;
-  @BelongsTo(() => User, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @BelongsTo(() => User)
   user: User;
-  @HasMany(() => BasketDevice, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  Baskets: BasketDevice[];
+  @BelongsToMany(() => Device, () => BasketDevice)
+  devices: Device[];
 }

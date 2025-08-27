@@ -8,7 +8,7 @@ interface UserEntity {
   password: string;
 }
 
-@Table
+@Table({ tableName: 'users' })
 export class User extends Model<User, UserEntity> {
   @Column({ type: DataType.STRING, allowNull: false })
   name: string;
@@ -18,8 +18,8 @@ export class User extends Model<User, UserEntity> {
   password: string;
   @Column({ type: DataType.STRING, allowNull: false, defaultValue: 'USER' })
   role: string;
-  @HasOne(() => Basket, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @HasOne(() => Basket)
   basket: Basket;
-  @HasMany(() => Rating, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @HasMany(() => Rating)
   ratings: Rating[];
 }

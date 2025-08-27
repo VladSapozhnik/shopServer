@@ -1,26 +1,24 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateTypeDto } from './dto/create-type.dto';
-import { UpdateTypeDto } from './dto/update-type.dto';
+import { InjectModel } from '@nestjs/sequelize';
+import { Type } from './entities/type.entity';
 
 @Injectable()
 export class TypeService {
-  create(createTypeDto: CreateTypeDto) {
-    return 'This action adds a new type';
+  constructor(@InjectModel(Type) private readonly typeModel: typeof Type) {}
+  async create(createTypeDto: CreateTypeDto) {
+    const type = await this.typeModel.findOne({
+      where: { name: createTypeDto.name },
+    });
+
+    if (type) {
+      throw new ConflictException('Такая категория уже существует!');
+    }
+
+    return await this.typeModel.create(createTypeDto);
   }
 
-  findAll() {
-    return `This action returns all type`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} type`;
-  }
-
-  update(id: number, updateTypeDto: UpdateTypeDto) {
-    return `This action updates a #${id} type`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} type`;
+  async findAll() {
+    return await this.typeModel.findAll();
   }
 }

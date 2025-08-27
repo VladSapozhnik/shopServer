@@ -1,5 +1,6 @@
 import {
   BelongsTo,
+  BelongsToMany,
   Column,
   DataType,
   ForeignKey,
@@ -7,29 +8,40 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { DeviceInfo } from '../../device-info/entities/device-info.entity';
+import { DataTypes } from 'sequelize';
 import { Type } from '../../type/entities/type.entity';
+import { Brand } from '../../brand/entities/brand.entity';
 import { Rating } from '../../rating/entities/rating.entity';
-import { BasketDevice } from '../../basket-device/entities/basket-device.entity';
-
-@Table
+import { Basket } from '../../basket/entities/basket.entity';
+import { BasketDevice } from '../../basket/entities/basket-device.entity';
+import { DeviceInfo } from '../../device-info/entities/device-info.entity';
+@Table({ tableName: 'devices' })
 export class Device extends Model {
-  @Column({ type: DataType.STRING, unique: true, allowNull: false })
+  @Column({ type: DataTypes.STRING, unique: true, allowNull: false })
   name: string;
-  @Column({ type: DataType.INTEGER, allowNull: false })
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
   price: number;
-  @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
+  @Column({ type: DataTypes.INTEGER, defaultValue: 0 })
   rating: number;
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataTypes.STRING, allowNull: false })
   img: string;
-  @HasMany(() => Rating, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  Ratings: Rating[];
-  @HasMany(() => BasketDevice, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  BasketDevice: BasketDevice[];
-  @HasMany(() => DeviceInfo, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  deviceInfos: DeviceInfo[];
   @ForeignKey(() => Type)
-  typeId: Type;
-  @BelongsTo(() => Type, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
-  device: Type;
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+  })
+  userId: number;
+  @BelongsTo(() => Type)
+  user: Type;
+  @ForeignKey(() => Brand)
+  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  brandId: number;
+  @BelongsTo(() => Brand)
+  brand: Brand;
+  @HasMany(() => Rating)
+  ratings: Rating[];
+  @BelongsToMany(() => Basket, () => BasketDevice)
+  baskets: Basket[];
+  @HasMany(() => DeviceInfo)
+  deviceInfos: DeviceInfo[];
 }

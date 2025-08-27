@@ -5,12 +5,21 @@ import { SequelizeModule } from '@nestjs/sequelize';
 
 import { UserModule } from './user/user.module';
 import { BasketModule } from './basket/basket.module';
-import { DeviceModule } from './device/device.module';
 import { RatingModule } from './rating/rating.module';
-import { BrandModule } from './brand/brand.module';
+import { DeviceModule } from './device/device.module';
 import { TypeModule } from './type/type.module';
+import { BrandModule } from './brand/brand.module';
 import { DeviceInfoModule } from './device-info/device-info.module';
-import { BasketDeviceModule } from './basket-device/basket-device.module';
+
+import { User } from './user/entities/user.entity';
+import { Type } from './type/entities/type.entity';
+import { Rating } from './rating/entities/rating.entity';
+import { DeviceInfo } from './device-info/entities/device-info.entity';
+import { Device } from './device/entities/device.entity';
+import { Brand } from './brand/entities/brand.entity';
+import { BrandType } from './brand/entities/brand-type.entity';
+import { Basket } from './basket/entities/basket.entity';
+import { BasketDevice } from './basket/entities/basket-device.entity';
 
 @Module({
   imports: [
@@ -27,6 +36,17 @@ import { BasketDeviceModule } from './basket-device/basket-device.module';
         username: configService.get('db_username'),
         password: configService.get('db_password'),
         database: configService.get('db_name'),
+        models: [
+          User,
+          Type,
+          Rating,
+          DeviceInfo,
+          Device,
+          Brand,
+          BrandType,
+          Basket,
+          BasketDevice,
+        ],
         autoLoadModels: true,
         synchronize: true,
       }),
@@ -34,12 +54,11 @@ import { BasketDeviceModule } from './basket-device/basket-device.module';
     }),
     UserModule,
     BasketModule,
-    DeviceModule,
     RatingModule,
-    BrandModule,
+    DeviceModule,
     TypeModule,
+    BrandModule,
     DeviceInfoModule,
-    BasketDeviceModule,
   ],
 })
 export class AppModule {}

@@ -6,20 +6,23 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { User } from '../../user/entities/user.entity';
+import { Basket } from './basket.entity';
 import { Device } from '../../device/entities/device.entity';
-@Table({ tableName: 'ratings' })
-export class Rating extends Model {
+
+@Table({ tableName: 'basket-devices' })
+export class BasketDevice extends Model {
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: false,
+    autoIncrement: true,
+    primaryKey: true,
+  })
+  declare id: number;
+  @ForeignKey(() => Basket)
   @Column({ type: DataType.INTEGER, allowNull: false })
-  rate: number;
-  @ForeignKey(() => User)
-  @Column({ type: DataType.INTEGER, allowNull: false })
-  userId: number;
-  @BelongsTo(() => User)
-  user: User;
+  basketId: number;
+
   @ForeignKey(() => Device)
   @Column({ type: DataType.INTEGER, allowNull: false })
   deviceId: number;
-  @BelongsTo(() => Device)
-  device: Device;
 }

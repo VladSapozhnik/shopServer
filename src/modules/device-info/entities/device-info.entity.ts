@@ -1,14 +1,14 @@
-import { BelongsTo, Column, DataType, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { BelongsTo, Column, ForeignKey, Model, Table } from 'sequelize-typescript';
+import { DataTypes } from 'sequelize';
 import { Device } from '../../device/entities/device.entity';
-
-@Table
+@Table({ tableName: 'device-infos' })
 export class DeviceInfo extends Model {
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataTypes.STRING, allowNull: false })
   title: string;
-  @Column({ type: DataType.STRING, allowNull: false })
+  @Column({ type: DataTypes.STRING, allowNull: false })
   description: string;
   @ForeignKey(() => Device)
   deviceId: Device;
-  @BelongsTo(() => Device, { onDelete: 'CASCADE', onUpdate: 'CASCADE' })
+  @BelongsTo(() => Device)
   device: Device;
 }

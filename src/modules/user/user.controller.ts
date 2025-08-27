@@ -20,9 +20,9 @@ export class UserController {
     return this.userService.register(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
+  @Post('login')
+  login() {
+    return this.userService.login();
   }
 
   @Get(':id')
