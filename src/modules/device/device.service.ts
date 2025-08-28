@@ -3,11 +3,14 @@ import { CreateDeviceDto } from './dto/create-device.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Device } from './entities/device.entity';
 import { FilesService } from '../files/files.service';
+import { DeviceInfo } from './entities/device-info.entity';
 
 @Injectable()
 export class DeviceService {
   constructor(
     @InjectModel(Device) private readonly deviceModel: typeof Device,
+    @InjectModel(DeviceInfo)
+    private readonly deviceInfoModel: typeof DeviceInfo,
     private readonly filesService: FilesService,
   ) {}
   async create(
@@ -16,7 +19,29 @@ export class DeviceService {
   ): Promise<Device> {
     const fileName: string = await this.filesService.createFile(image);
 
-    return await this.deviceModel.create({ ...createDeviceDto, img: fileName });
+    const device: Device = await this.deviceModel.create({
+      ...createDeviceDto,
+      img: fileName,
+    });
+
+    if (createDeviceDto.info?.length) {
+      const infoArray = JSON.parse(createDeviceDto.info) as DeviceInfo[];
+
+      await Promise.all(
+        infoArray.map(
+          (infoItem: DeviceInfo): Promise<DeviceInfo> =>
+            this.deviceInfoModel.create({
+              title: infoItem.title,
+              description: infoItem.description,
+              deviceId: +device.id,
+            }),
+        ),
+      );
+
+      return device;
+    }
+
+    return device;
   }
 
   async findAll(
@@ -46,6 +71,8 @@ export class DeviceService {
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} device`;
+    return this.deviceModel.findByPk(id, {
+      include: [{ model: DeviceInfo, as: 'info' }],
+    });
   }
 }

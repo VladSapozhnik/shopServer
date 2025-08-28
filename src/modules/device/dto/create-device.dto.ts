@@ -19,5 +19,9 @@ export class CreateDeviceDto {
   })
   typeId: number;
   @IsOptional()
-  img: string;
+  @IsString()
+  img?: string;
+  @IsOptional()
+  @IsString()
+  info?: string;
 }

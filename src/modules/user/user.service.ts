@@ -19,10 +19,14 @@ export class UserService {
 
     const hashPassword: string = await bcrypt.hash(createUserDto.password, 10);
 
-    return await this.userModel.create({
+    const newUser: User = await this.userModel.create({
       ...createUserDto,
       password: hashPassword,
     });
+
+    await newUser.$create('basket', {});
+
+    return newUser;
   }
 
   login() {

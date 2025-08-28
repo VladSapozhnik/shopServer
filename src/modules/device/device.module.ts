@@ -8,19 +8,19 @@ import { Brand } from '../brand/entities/brand.entity';
 import { Rating } from '../rating/entities/rating.entity';
 import { Basket } from '../basket/entities/basket.entity';
 import { BasketDevice } from '../basket/entities/basket-device.entity';
-import { DeviceInfo } from '../device-info/entities/device-info.entity';
 import { FilesModule } from '../files/files.module';
+import { DeviceInfo } from './entities/device-info.entity';
 
 @Module({
   imports: [
     SequelizeModule.forFeature([
       Device,
+      DeviceInfo,
       Type,
       Brand,
       Rating,
       Basket,
       BasketDevice,
-      DeviceInfo,
     ]),
     FilesModule,
   ],

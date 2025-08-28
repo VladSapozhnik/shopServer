@@ -8,13 +8,12 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
-import { DataTypes } from 'sequelize';
 import { Type } from '../../type/entities/type.entity';
 import { Brand } from '../../brand/entities/brand.entity';
 import { Rating } from '../../rating/entities/rating.entity';
 import { Basket } from '../../basket/entities/basket.entity';
 import { BasketDevice } from '../../basket/entities/basket-device.entity';
-import { DeviceInfo } from '../../device-info/entities/device-info.entity';
+import { DeviceInfo } from './device-info.entity';
 
 interface deviceAttribute {
   name: string;
@@ -26,13 +25,13 @@ interface deviceAttribute {
 
 @Table({ tableName: 'devices' })
 export class Device extends Model<Device, deviceAttribute> {
-  @Column({ type: DataTypes.STRING, unique: true, allowNull: false })
+  @Column({ type: DataType.STRING, unique: true, allowNull: false })
   name: string;
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   price: number;
-  @Column({ type: DataTypes.INTEGER, defaultValue: 0 })
+  @Column({ type: DataType.INTEGER, defaultValue: 0 })
   rating: number;
-  @Column({ type: DataTypes.STRING, allowNull: false })
+  @Column({ type: DataType.STRING, allowNull: false })
   img: string;
   @ForeignKey(() => Type)
   @Column({
@@ -43,7 +42,7 @@ export class Device extends Model<Device, deviceAttribute> {
   @BelongsTo(() => Type)
   type: Type;
   @ForeignKey(() => Brand)
-  @Column({ type: DataTypes.INTEGER, allowNull: false })
+  @Column({ type: DataType.INTEGER, allowNull: false })
   brandId: number;
   @BelongsTo(() => Brand)
   brand: Brand;
