@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from '../configurations';
 import { SequelizeModule } from '@nestjs/sequelize';
+import * as path from "path"
 
 import { UserModule } from './user/user.module';
 import { BasketModule } from './basket/basket.module';
@@ -20,9 +21,14 @@ import { Brand } from './brand/entities/brand.entity';
 import { BrandType } from './brand/entities/brand-type.entity';
 import { Basket } from './basket/entities/basket.entity';
 import { BasketDevice } from './basket/entities/basket-device.entity';
+import { FilesModule } from './files/files.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      rootPath: path.resolve(__dirname, '..', 'static'),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
@@ -59,6 +65,7 @@ import { BasketDevice } from './basket/entities/basket-device.entity';
     TypeModule,
     BrandModule,
     DeviceInfoModule,
+    FilesModule,
   ],
 })
 export class AppModule {}

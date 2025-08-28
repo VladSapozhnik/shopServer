@@ -20,5 +20,5 @@ export class Type extends Model<Type, TypeAttribute> {
   @HasMany(() => Device)
   devices: Device[];
   @BelongsToMany(() => Brand, () => BrandType)
-  brandTypes: BrandType[];
+  brand: Brand[];
 }

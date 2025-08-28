@@ -3,26 +3,36 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
+  UseInterceptors,
+  UploadedFile,
+  Query,
 } from '@nestjs/common';
 import { DeviceService } from './device.service';
 import { CreateDeviceDto } from './dto/create-device.dto';
-import { UpdateDeviceDto } from './dto/update-device.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('devices')
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 
   @Post()
-  create(@Body() createDeviceDto: CreateDeviceDto) {
-    return this.deviceService.create(createDeviceDto);
+  @UseInterceptors(FileInterceptor('img'))
+  create(
+    @Body() createDeviceDto: CreateDeviceDto,
+    @UploadedFile() image: Express.Multer.File,
+  ) {
+    return this.deviceService.create(createDeviceDto, image);
   }
 
   @Get()
-  findAll() {
-    return this.deviceService.findAll();
+  findAll(
+    @Query('brandId') brandId: number,
+    @Query('typeId') typeId: number,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
+    return this.deviceService.findAll(brandId, typeId, page, limit);
   }
 
   @Get(':id')

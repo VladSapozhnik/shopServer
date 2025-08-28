@@ -15,8 +15,17 @@ import { Rating } from '../../rating/entities/rating.entity';
 import { Basket } from '../../basket/entities/basket.entity';
 import { BasketDevice } from '../../basket/entities/basket-device.entity';
 import { DeviceInfo } from '../../device-info/entities/device-info.entity';
+
+interface deviceAttribute {
+  name: string;
+  price: number;
+  brandId: number;
+  typeId: number;
+  img: string;
+}
+
 @Table({ tableName: 'devices' })
-export class Device extends Model {
+export class Device extends Model<Device, deviceAttribute> {
   @Column({ type: DataTypes.STRING, unique: true, allowNull: false })
   name: string;
   @Column({ type: DataTypes.INTEGER, allowNull: false })
@@ -30,9 +39,9 @@ export class Device extends Model {
     type: DataType.INTEGER,
     allowNull: false,
   })
-  userId: number;
+  typeId: number;
   @BelongsTo(() => Type)
-  user: Type;
+  type: Type;
   @ForeignKey(() => Brand)
   @Column({ type: DataTypes.INTEGER, allowNull: false })
   brandId: number;
@@ -42,6 +51,6 @@ export class Device extends Model {
   ratings: Rating[];
   @BelongsToMany(() => Basket, () => BasketDevice)
   baskets: Basket[];
-  @HasMany(() => DeviceInfo)
+  @HasMany(() => DeviceInfo, { as: 'info' })
   deviceInfos: DeviceInfo[];
 }

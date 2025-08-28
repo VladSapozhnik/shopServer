@@ -19,6 +19,6 @@ export class TypeService {
   }
 
   async findAll() {
-    return await this.typeModel.findAll();
+    return await this.typeModel.findAll({ include: { all: true } });
   }
 }
