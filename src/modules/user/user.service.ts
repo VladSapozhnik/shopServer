@@ -18,11 +18,11 @@ export class UserService {
     private readonly tokenService: TokenService,
   ) {}
   async register(createUserDto: CreateUserDto): Promise<any> {
-    const user: User | null = await this.userModel.findOne({
+    const existUser: User | null = await this.userModel.findOne({
       where: { email: createUserDto.email },
     });
 
-    if (user) {
+    if (existUser) {
       throw new ConflictException('Пользователь с таким email уже существует');
     }
 
@@ -43,24 +43,24 @@ export class UserService {
   }
 
   async login(loginDto: LoginDto) {
-    const user = await this.userModel.findOne({
+    const existUser = await this.userModel.findOne({
       where: { email: loginDto.email },
     });
 
-    if (!user) {
+    if (!existUser) {
       throw new NotFoundException('Такой пользователь не найден!');
     }
 
     const isPassword: boolean = await bcrypt.compare(
       loginDto.password,
-      user.dataValues.password,
+      existUser.dataValues.password,
     );
 
-    if (!isPassword && user) {
+    if (!isPassword && existUser) {
       throw new NotFoundException('Такой пользователь не найден!');
     }
 
-    const token: string = await this.auth(user);
+    const token: string = await this.auth(existUser);
 
     return { token };
   }
