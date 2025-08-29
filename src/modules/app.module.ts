@@ -22,6 +22,7 @@ import { BasketDevice } from './basket/entities/basket-device.entity';
 import { FilesModule } from './files/files.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { DeviceInfo } from './device/entities/device-info.entity';
+import { TokenModule } from './token/token.module';
 
 @Module({
   imports: [
@@ -64,6 +65,7 @@ import { DeviceInfo } from './device/entities/device-info.entity';
     TypeModule,
     BrandModule,
     FilesModule,
+    TokenModule,
   ],
 })
 export class AppModule {}

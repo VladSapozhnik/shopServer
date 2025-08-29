@@ -1,4 +1,11 @@
-import { Column, DataType, HasMany, HasOne, Model, Table } from 'sequelize-typescript';
+import {
+  Column,
+  DataType,
+  HasMany,
+  HasOne,
+  Model,
+  Table,
+} from 'sequelize-typescript';
 import { Basket } from '../../basket/entities/basket.entity';
 import { Rating } from '../../rating/entities/rating.entity';
 

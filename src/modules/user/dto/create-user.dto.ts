@@ -17,7 +17,7 @@ export class CreateUserDto {
   email: string;
   @IsString({ message: 'Поле пароль должно быть строкой' })
   @IsNotEmpty({ message: 'Поле пароль пустое' })
-  @MaxLength(16, { message: 'Поле имя должно содержать меньше 16 символов' })
-  @MinLength(6, { message: 'Поле имя должно содержать больше 6 символов' })
+  @MaxLength(16, { message: 'Поле пароль должно содержать меньше 16 символов' })
+  @MinLength(6, { message: 'Поле пароль должно содержать больше 6 символов' })
   password: string;
 }

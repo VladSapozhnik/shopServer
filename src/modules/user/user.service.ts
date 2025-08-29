@@ -1,15 +1,24 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
+import { TokenService } from '../token/token.service';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User) private readonly userModel: typeof User) {}
-  async register(createUserDto: CreateUserDto): Promise<User> {
-    const user = await this.userModel.findOne({
+  constructor(
+    @InjectModel(User) private readonly userModel: typeof User,
+    private readonly tokenService: TokenService,
+  ) {}
+  async register(createUserDto: CreateUserDto): Promise<any> {
+    const user: User | null = await this.userModel.findOne({
       where: { email: createUserDto.email },
     });
 
@@ -26,11 +35,40 @@ export class UserService {
 
     await newUser.$create('basket', {});
 
-    return newUser;
+    const token: string = await this.auth(newUser);
+
+    return {
+      token,
+    };
   }
 
-  login() {
-    return `This action returns all user`;
+  async login(loginDto: LoginDto) {
+    const user = await this.userModel.findOne({
+      where: { email: loginDto.email },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Такой пользователь не найден!');
+    }
+
+    const isPassword: boolean = await bcrypt.compare(
+      loginDto.password,
+      user.dataValues.password,
+    );
+
+    if (!isPassword && user) {
+      throw new NotFoundException('Такой пользователь не найден!');
+    }
+
+    const token: string = await this.auth(user);
+
+    return { token };
+  }
+
+  private async auth(user: User) {
+    const { assessToken } = await this.tokenService.generateToken(user);
+
+    return assessToken;
   }
 
   findOne(id: number) {
