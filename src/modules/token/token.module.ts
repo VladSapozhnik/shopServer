@@ -13,6 +13,10 @@ import { JwtModule } from '@nestjs/jwt';
           algorithm: 'HS256',
           expiresIn: configService.get('jwt_access_token'),
         },
+        verifyOptions: {
+          algorithms: ['HS256'],
+          ignoreExpiration: false,
+        },
       }),
       inject: [ConfigService],
     }),

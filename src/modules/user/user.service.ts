@@ -71,6 +71,20 @@ export class UserService {
     return assessToken;
   }
 
+  async validate(id: number, email: string): Promise<User> {
+    const existUser: User | null = await this.userModel.findOne({
+      where: { id, email },
+      include: {
+        all: true,
+      },
+    });
+
+    if (!existUser) {
+      throw new NotFoundException('Пользователь не найден!');
+    }
+
+    return existUser;
+  }
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }

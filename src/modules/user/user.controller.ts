@@ -11,6 +11,9 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/login.dto';
+import { Authorized } from '../../decorators/authorized.decorator';
+import { User } from './entities/user.entity';
+import { Authorization } from '../../decorators/authorization.decorator';
 
 @Controller('user')
 export class UserController {
@@ -24,6 +27,12 @@ export class UserController {
   @Post('login')
   login(@Body() loginDto: LoginDto) {
     return this.userService.login(loginDto);
+  }
+
+  @Authorization()
+  @Get('profile')
+  getProfile(@Authorized() user: User): User {
+    return user;
   }
 
   @Get(':id')
