@@ -74,6 +74,9 @@ export class UserService {
   async validate(id: number, email: string): Promise<User> {
     const existUser: User | null = await this.userModel.findOne({
       where: { id, email },
+      attributes: {
+        exclude: ['password'],
+      },
       include: {
         all: true,
       },
