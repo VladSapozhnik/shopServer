@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,19 +15,26 @@ import { LoginDto } from './dto/login.dto';
 import { Authorized } from '../../decorators/authorized.decorator';
 import { User } from './entities/user.entity';
 import { Authorization } from '../../decorators/authorization.decorator';
+import type { Response } from 'express';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('register')
-  register(@Body() createUserDto: CreateUserDto) {
-    return this.userService.register(createUserDto);
+  register(
+    @Res({ passthrough: true }) response: Response,
+    @Body() createUserDto: CreateUserDto,
+  ) {
+    return this.userService.register(response, createUserDto);
   }
 
   @Post('login')
-  login(@Body() loginDto: LoginDto) {
-    return this.userService.login(loginDto);
+  login(
+    @Res({ passthrough: true }) response: Response,
+    @Body() loginDto: LoginDto,
+  ) {
+    return this.userService.login(response, loginDto);
   }
 
   @Authorization()
