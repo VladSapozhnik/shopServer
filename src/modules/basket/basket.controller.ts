@@ -1,7 +1,18 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { BasketService } from './basket.service';
 import { CreateBasketDto } from './dto/create-basket.dto';
 import { UpdateBasketDto } from './dto/update-basket.dto';
+import { Authorization } from '../../decorators/authorization.decorator';
+import { Authorized } from '../../decorators/authorized.decorator';
+import { User } from '../user/entities/user.entity';
 
 @Controller('basket')
 export class BasketController {
@@ -17,9 +28,10 @@ export class BasketController {
     return this.basketService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.basketService.findOne(+id);
+  @Authorization()
+  @Get('get-basket')
+  getBasket(@Authorized() user: User) {
+    return this.basketService.getBasket(user);
   }
 
   @Patch(':id')

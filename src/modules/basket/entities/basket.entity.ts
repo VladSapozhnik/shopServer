@@ -11,8 +11,8 @@ import { User } from '../../user/entities/user.entity';
 
 import { Device } from '../../device/entities/device.entity';
 import { BasketDevice } from './basket-device.entity';
-@Table({ tableName: 'baskets' })
-export class Basket extends Model {
+@Table({ tableName: 'basket' })
+export class Basket extends Model<Basket> {
   @ForeignKey(() => User)
   @Column({
     type: DataType.INTEGER,

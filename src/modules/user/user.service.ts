@@ -121,6 +121,26 @@ export class UserService {
 
     return existUser;
   }
+
+  // async existUser(user: User) {
+  //   const where = {};
+  //
+  //   if (user.id) {
+  //     where['id'] = Number(user.id);
+  //   }
+  //
+  //   if (user.email) {
+  //     where['email'] = user.email;
+  //   }
+  //
+  //   const findUser: User | null = await this.userModel.findOne({ where });
+  //
+  //   if (!findUser) {
+  //     throw new NotFoundException('Такой пользователь не найден!');
+  //   }
+  //
+  //   return findUser;
+  // }
   findOne(id: number) {
     return `This action returns a #${id} user`;
   }
