@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBasketDto } from './dto/create-basket.dto';
-import { UpdateBasketDto } from './dto/update-basket.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { Basket } from './entities/basket.entity';
 import { BasketDevice } from './entities/basket-device.entity';
@@ -16,16 +15,31 @@ export class BasketService {
     @InjectModel(BasketDevice)
     private readonly basketDeviceModel: typeof BasketDevice,
   ) {}
-  create(createBasketDto: CreateBasketDto) {
-    return 'This action adds a new basket';
+  async addDeviceToBasket(
+    user: User,
+    createBasketDto: CreateBasketDto,
+    quantity: number = 1,
+  ): Promise<BasketDevice> {
+    const basket: Basket = await this.getBasket(user);
+
+    const [basketDevice, create] = await this.basketDeviceModel.findOrCreate({
+      where: {
+        basketId: basket.dataValues.id,
+        deviceId: createBasketDto.deviceId,
+      },
+      defaults: { quantity },
+    });
+
+    if (!create) {
+      await basketDevice.increment('quantity', { by: quantity });
+      return await basketDevice.reload();
+    }
+
+    return basketDevice;
   }
 
-  findAll() {
-    return `This action returns all basket`;
-  }
-
-  async getBasket(user: User) {
-    return await this.basketModel.findOne({
+  async getBasket(user: User): Promise<Basket> {
+    const basket: Basket | null = await this.basketModel.findOne({
       where: {
         userId: Number(user.dataValues.id),
       },
@@ -43,13 +57,25 @@ export class BasketService {
         },
       ],
     });
+
+    if (!basket) {
+      throw new NotFoundException('Корзина не найдена');
+    }
+
+    return basket;
   }
 
-  update(id: number, updateBasketDto: UpdateBasketDto) {
-    return `This action updates a #${id} basket`;
+  update(user: User, deviceId: number) {
+    return `This action updates a #${deviceId} basket`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} basket`;
+  async removeDevice(user: User, deviceId: number) {
+    const basket: Basket = await this.getBasket(user);
+
+    await this.basketDeviceModel.destroy({
+      where: { basketId: basket.dataValues.id, deviceId },
+    });
+
+    return await this.getBasket(user);
   }
 }
