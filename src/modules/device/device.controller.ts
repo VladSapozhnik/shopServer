@@ -7,6 +7,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { DeviceService } from './device.service';
 import { CreateDeviceDto } from './dto/create-device.dto';
@@ -36,7 +37,7 @@ export class DeviceController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.deviceService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.deviceService.findOne(id);
   }
 }
