@@ -1,9 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateDeviceDto } from './dto/create-device.dto';
-// import { InjectModel } from '@nestjs/sequelize';
-// import { Device } from './entities/device.entity';
 import { FilesService } from '../files/files.service';
-// import { DeviceInfo } from './entities/device-info.entity';
 import { PrismaService } from '../prisma/prisma.service';
 import { Device, DeviceInfo } from '@prisma/client';
 
@@ -11,9 +12,6 @@ import { Device, DeviceInfo } from '@prisma/client';
 export class DeviceService {
   constructor(
     private readonly prismaService: PrismaService,
-    // @InjectModel(Device) private readonly deviceModel: typeof Device,
-    // @InjectModel(DeviceInfo)
-    // private readonly deviceInfoModel: typeof DeviceInfo,
     private readonly filesService: FilesService,
   ) {}
   async create(
@@ -85,19 +83,20 @@ export class DeviceService {
     const totalCount = await this.prismaService.device.count({ where });
 
     return {
-      rows: devices,
       count: totalCount,
+      rows: devices,
     };
   }
 
-  findOne(id: number) {
-    return this.prismaService.device.findUnique({
-      where: {
-        id,
-      },
-      select: {
-        deviceInfos: true,
-      },
+  async findOne(id: number) {
+    const device = await this.prismaService.device.findUnique({
+      where: { id: id },
     });
+
+    if (!device) {
+      throw new NotFoundException('Такой девайс не найден!');
+    }
+
+    return device;
   }
 }

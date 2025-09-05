@@ -13,8 +13,6 @@ import { CreateBasketDto } from './dto/create-basket.dto';
 import { Authorization } from '../../decorators/authorization.decorator';
 import { Authorized } from '../../decorators/authorized.decorator';
 import type { User } from '@prisma/client';
-// import { User } from '../user/entities/user.entity';
-// import { UpdateUserDto } from '../user/dto/update-user.dto';
 
 @Controller('basket')
 export class BasketController {

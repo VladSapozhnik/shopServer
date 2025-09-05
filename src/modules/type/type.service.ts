@@ -1,9 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateTypeDto } from './dto/create-type.dto';
 import { PrismaService } from '../prisma/prisma.service';
-// import { InjectModel } from '@nestjs/sequelize';
-// import { Type } from './entities/type.entity';
-
 @Injectable()
 export class TypeService {
   constructor(private readonly prismaService: PrismaService) {}
@@ -21,7 +18,7 @@ export class TypeService {
 
   async findAll() {
     return this.prismaService.type.findMany({
-      select: { id: true, name: true, devices: true, brands: true },
+      select: { id: true, name: true },
     });
   }
 }

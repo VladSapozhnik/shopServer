@@ -2,22 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateBasketDto } from './dto/create-basket.dto';
 import { Basket, BasketDevice, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-// import { InjectModel } from '@nestjs/sequelize';
-// import { Basket } from './entities/basket.entity';
-// import { BasketDevice } from './entities/basket-device.entity';
-// import { User } from '../user/entities/user.entity';
-// import { Device } from '../device/entities/device.entity';
-// import { DeviceInfo } from '../device/entities/device-info.entity';
-// import { Type } from '../type/entities/type.entity';
 
 @Injectable()
 export class BasketService {
-  constructor(
-    private readonly prismaService: PrismaService,
-    // @InjectModel(Basket) private readonly basketModel: typeof Basket,
-    // @InjectModel(BasketDevice)
-    // private readonly basketDeviceModel: typeof BasketDevice,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
   async addDeviceToBasket(
     user: User,
     createBasketDto: CreateBasketDto,

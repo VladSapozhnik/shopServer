@@ -53,9 +53,9 @@ model Device {
   img String
 
   type Type @relation(fields: [typeId], references: [id])
-  typeId Int @unique
+  typeId Int
   brand Brand @relation(fields: [brandId], references: [id])
-  brandId Int @unique
+  brandId Int
 
   ratings Rating[]
   baskets BasketDevice[]
