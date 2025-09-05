@@ -13,9 +13,10 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { Authorized } from '../../decorators/authorized.decorator';
-import { User } from './entities/user.entity';
+// import { User } from './entities/user.entity';
 import { Authorization } from '../../decorators/authorization.decorator';
 import type { Response } from 'express';
+import type { User } from '@prisma/client';
 
 @Controller('user')
 export class UserController {

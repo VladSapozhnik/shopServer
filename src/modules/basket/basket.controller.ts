@@ -6,12 +6,15 @@ import {
   Param,
   Delete,
   ParseIntPipe,
+  Patch,
 } from '@nestjs/common';
 import { BasketService } from './basket.service';
 import { CreateBasketDto } from './dto/create-basket.dto';
 import { Authorization } from '../../decorators/authorization.decorator';
 import { Authorized } from '../../decorators/authorized.decorator';
-import { User } from '../user/entities/user.entity';
+import type { User } from '@prisma/client';
+// import { User } from '../user/entities/user.entity';
+// import { UpdateUserDto } from '../user/dto/update-user.dto';
 
 @Controller('basket')
 export class BasketController {
@@ -30,6 +33,11 @@ export class BasketController {
   @Get('get-basket')
   getBasket(@Authorized() user: User) {
     return this.basketService.getBasket(user);
+  }
+  @Authorization()
+  @Patch(':id')
+  update(@Authorized() user: User, @Param('id', ParseIntPipe) id: number) {
+    return this.basketService.removeOneDevice(user, +id);
   }
 
   @Authorization()

@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '../user/entities/user.entity';
+// import { User } from '../user/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class TokenService {
@@ -17,9 +18,9 @@ export class TokenService {
     user: User,
   ): Promise<{ assessToken: string; refreshToken: string }> {
     const payload = {
-      id: Number(user.dataValues.id),
-      email: user.dataValues.email,
-      role: user.dataValues.role,
+      id: Number(user.id),
+      email: user.email,
+      role: user.role,
     };
 
     const assessToken: string = await this.jwtService.signAsync(payload);

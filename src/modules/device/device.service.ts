@@ -1,47 +1,57 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateDeviceDto } from './dto/create-device.dto';
-import { InjectModel } from '@nestjs/sequelize';
-import { Device } from './entities/device.entity';
+// import { InjectModel } from '@nestjs/sequelize';
+// import { Device } from './entities/device.entity';
 import { FilesService } from '../files/files.service';
-import { DeviceInfo } from './entities/device-info.entity';
+// import { DeviceInfo } from './entities/device-info.entity';
+import { PrismaService } from '../prisma/prisma.service';
+import { Device, DeviceInfo } from '@prisma/client';
 
 @Injectable()
 export class DeviceService {
   constructor(
-    @InjectModel(Device) private readonly deviceModel: typeof Device,
-    @InjectModel(DeviceInfo)
-    private readonly deviceInfoModel: typeof DeviceInfo,
+    private readonly prismaService: PrismaService,
+    // @InjectModel(Device) private readonly deviceModel: typeof Device,
+    // @InjectModel(DeviceInfo)
+    // private readonly deviceInfoModel: typeof DeviceInfo,
     private readonly filesService: FilesService,
   ) {}
   async create(
     createDeviceDto: CreateDeviceDto,
     image: Express.Multer.File,
   ): Promise<Device> {
-    const fileName: string = await this.filesService.createFile(image);
+    const existDevice: Device | null =
+      await this.prismaService.device.findUnique({
+        where: { name: createDeviceDto.name },
+      });
 
-    const device: Device = await this.deviceModel.create({
-      ...createDeviceDto,
-      img: fileName,
-    });
-
-    if (createDeviceDto.info?.length) {
-      const infoArray = JSON.parse(createDeviceDto.info) as DeviceInfo[];
-
-      await Promise.all(
-        infoArray.map(
-          (infoItem: DeviceInfo): Promise<DeviceInfo> =>
-            this.deviceInfoModel.create({
-              title: infoItem.title,
-              description: infoItem.description,
-              deviceId: +device.id,
-            }),
-        ),
+    if (existDevice) {
+      throw new ConflictException(
+        'Пользователь с таким названием уже существует',
       );
-
-      return device;
     }
 
-    return device;
+    const fileName: string = await this.filesService.createFile(image);
+
+    const infoArray = createDeviceDto.info
+      ? (JSON.parse(createDeviceDto.info) as DeviceInfo[])
+      : [];
+
+    return this.prismaService.device.create({
+      data: {
+        ...createDeviceDto,
+        img: fileName,
+        deviceInfos: {
+          create: infoArray.map((infoItem) => ({
+            title: infoItem.title,
+            description: infoItem.description,
+          })),
+        },
+      },
+      include: {
+        deviceInfos: true,
+      },
+    });
   }
 
   async findAll(
@@ -62,17 +72,32 @@ export class DeviceService {
       where['typeId'] = typeId;
     }
 
-    return await this.deviceModel.findAndCountAll({
+    const devices = await this.prismaService.device.findMany({
       where,
-      limit,
-      offset,
-      include: { all: true },
+      skip: offset,
+      take: limit,
+      include: {
+        ratings: true,
+        deviceInfos: true,
+      },
     });
+
+    const totalCount = await this.prismaService.device.count({ where });
+
+    return {
+      rows: devices,
+      count: totalCount,
+    };
   }
 
   findOne(id: number) {
-    return this.deviceModel.findByPk(id, {
-      include: [{ model: DeviceInfo, as: 'info' }],
+    return this.prismaService.device.findUnique({
+      where: {
+        id,
+      },
+      select: {
+        deviceInfos: true,
+      },
     });
   }
 }

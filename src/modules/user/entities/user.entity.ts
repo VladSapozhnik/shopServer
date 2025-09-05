@@ -18,13 +18,13 @@ interface UserEntity {
 @Table({ tableName: 'users' })
 export class User extends Model<User, UserEntity> {
   @Column({ type: DataType.STRING, allowNull: false })
-  name: string;
+  name!: string;
   @Column({ type: DataType.STRING, unique: true, allowNull: false })
-  email: string;
+  email!: string;
   @Column({ type: DataType.STRING, allowNull: false })
-  password: string;
+  password!: string;
   @Column({ type: DataType.STRING, allowNull: false, defaultValue: 'USER' })
-  role: string;
+  role!: string;
   @HasOne(() => Basket)
   basket: Basket;
   @HasMany(() => Rating)

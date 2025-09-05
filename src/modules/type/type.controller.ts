@@ -1,9 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body } from '@nestjs/common';
 import { TypeService } from './type.service';
 import { CreateTypeDto } from './dto/create-type.dto';
 

@@ -1,0 +1,107 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id Int @default(autoincrement()) @id @unique
+  name String
+  email String @unique
+  password String
+  role String @default("USER")
+  basket Basket?
+  rating Rating[]
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt
+}
+
+model Basket {
+  id Int @default(autoincrement()) @id @unique
+  user User @relation(fields: [userId], references: [id])
+  userId Int @unique
+  devices BasketDevice[]
+}
+
+model BasketDevice {
+  id Int @default(autoincrement()) @id @unique
+  quantity Int @default(1)
+  basket Basket @relation(fields: [basketId], references: [id])
+  basketId Int
+  device Device @relation(fields: [deviceId], references: [id])
+  deviceId Int
+
+  @@unique([basketId, deviceId])
+}
+
+model Device {
+  id Int @default(autoincrement()) @id @unique
+  name String @unique
+  price Int
+  rating Int @default(0)
+  img String
+
+  type Type @relation(fields: [typeId], references: [id])
+  typeId Int @unique
+  brand Brand @relation(fields: [brandId], references: [id])
+  brandId Int @unique
+
+  ratings Rating[]
+  baskets BasketDevice[]
+  deviceInfos DeviceInfo[]
+}
+
+model DeviceInfo {
+  id Int @default(autoincrement()) @id @unique
+  title String @unique
+  description String
+  device Device @relation(fields: [deviceId], references: [id])
+  deviceId Int @unique
+}
+
+model Brand {
+  id Int @default(autoincrement()) @id @unique
+  name String @unique
+  devices Device[]
+  types BrandType[]
+}
+
+model Type {
+  id Int @default(autoincrement()) @id @unique
+  name String @unique
+  devices Device[]
+  brands BrandType[]
+}
+
+model BrandType {
+  id Int @default(autoincrement()) @id @unique
+  brand Brand @relation(fields: [brandId], references: [id])
+  brandId Int
+  type Type @relation(fields: [typeId], references: [id])
+  typeId Int
+
+  @@unique([brandId, typeId])
+}
+
+model Rating {
+  id Int @default(autoincrement()) @id @unique
+  rate Int
+  user User @relation(fields: [userId], references: [id])
+  userId Int
+  device Device @relation(fields: [deviceId], references: [id])
+  deviceId Int
+
+  @@unique([deviceId, userId])
+}
+

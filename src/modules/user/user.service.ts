@@ -5,8 +5,8 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { InjectModel } from '@nestjs/sequelize';
-import { User } from './entities/user.entity';
+// import { InjectModel } from '@nestjs/sequelize';
+// import { User } from './entities/user.entity';
 import * as bcrypt from 'bcrypt';
 import { TokenService } from '../token/token.service';
 import { LoginDto } from './dto/login.dto';
@@ -14,12 +14,16 @@ import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
 import { isDev } from '../../utils/is-dev.util';
 import ms, { type StringValue } from 'ms';
+import { PrismaService } from '../prisma/prisma.service';
+import { User } from '@prisma/client';
+// import { User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
   private readonly REFRESH_EXPIRES_IN: string;
   constructor(
-    @InjectModel(User) private readonly userModel: typeof User,
+    private readonly prisma: PrismaService,
+    // @InjectModel(User) private readonly userModel: typeof User,
     private readonly tokenService: TokenService,
     private readonly configService: ConfigService,
   ) {
@@ -30,7 +34,7 @@ export class UserService {
     response: Response,
     createUserDto: CreateUserDto,
   ): Promise<any> {
-    const existUser: User | null = await this.userModel.findOne({
+    const existUser: User | null = await this.prisma.user.findUnique({
       where: { email: createUserDto.email },
     });
 
@@ -40,12 +44,15 @@ export class UserService {
 
     const hashPassword: string = await bcrypt.hash(createUserDto.password, 10);
 
-    const newUser: User = await this.userModel.create({
-      ...createUserDto,
-      password: hashPassword,
+    const newUser: User = await this.prisma.user.create({
+      data: {
+        ...createUserDto,
+        password: hashPassword,
+        basket: {
+          create: {},
+        },
+      },
     });
-
-    await newUser.$create('basket', {});
 
     const token: string = await this.auth(response, newUser);
 
@@ -55,7 +62,7 @@ export class UserService {
   }
 
   async login(response: Response, loginDto: LoginDto) {
-    const existUser: User | null = await this.userModel.findOne({
+    const existUser: User | null = await this.prisma.user.findUnique({
       where: { email: loginDto.email },
     });
 
@@ -65,7 +72,7 @@ export class UserService {
 
     const isPassword: boolean = await bcrypt.compare(
       loginDto.password,
-      existUser.dataValues.password,
+      existUser.password,
     );
 
     if (!isPassword && existUser) {
@@ -105,13 +112,11 @@ export class UserService {
   }
 
   async validate(id: number, email: string): Promise<User> {
-    const existUser: User | null = await this.userModel.findOne({
+    const existUser = await this.prisma.user.findUnique({
       where: { id, email },
-      attributes: {
-        exclude: ['password'],
-      },
       include: {
-        all: true,
+        basket: true,
+        rating: true,
       },
     });
 

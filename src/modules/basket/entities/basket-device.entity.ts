@@ -9,6 +9,10 @@ import {
 import { Basket } from './basket.entity';
 import { Device } from '../../device/entities/device.entity';
 
+// interface basketDeviceAttribute {
+//   quantity: number;
+// }
+
 @Table({ tableName: 'basket_devices' })
 export class BasketDevice extends Model {
   @Column({

@@ -1,6 +1,6 @@
 import { Request } from 'express';
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { User } from '../modules/user/entities/user.entity';
+import type { User } from '@prisma/client';
 export interface RequestWithUser extends Request {
   user: User;
 }
