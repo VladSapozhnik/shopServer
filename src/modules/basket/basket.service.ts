@@ -39,7 +39,7 @@ export class BasketService {
       {
         total: number;
       }[]
-    >`SELECT SUM(bd.quantity * d.price) AS TOTAL FROM "BasketDevice" bd JOIN "Device" d ON d.id = bd."deviceId" WHERE bd."basketId" = ${basketId}`;
+    >`SELECT SUM(bd.quantity * d.price) AS TOTAL FROM "basket_devices" bd JOIN "devices" d ON d.id = bd."deviceId" WHERE bd."basketId" = ${basketId}`;
 
     return Number(result[0]?.total ?? 0);
   }

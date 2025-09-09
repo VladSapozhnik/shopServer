@@ -23,8 +23,10 @@ model User {
   role String @default("USER")
   basket Basket?
   rating Rating[]
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
+  createAt DateTime @default(now()) @map("create_at")
+  updateAt DateTime @updatedAt @map("update_at")
+
+  @@map("users")
 }
 
 model Basket {
@@ -32,6 +34,8 @@ model Basket {
   user User @relation(fields: [userId], references: [id])
   userId Int @unique
   devices BasketDevice[]
+
+  @@map("baskets")
 }
 
 model BasketDevice {
@@ -43,6 +47,7 @@ model BasketDevice {
   deviceId Int
 
   @@unique([basketId, deviceId])
+  @@map("basket_devices")
 }
 
 model Device {
@@ -60,6 +65,8 @@ model Device {
   ratings Rating[]
   baskets BasketDevice[]
   deviceInfos DeviceInfo[]
+
+  @@map("devices")
 }
 
 model DeviceInfo {
@@ -68,6 +75,8 @@ model DeviceInfo {
   description String
   device Device @relation(fields: [deviceId], references: [id])
   deviceId Int @unique
+
+  @@map("device_infos")
 }
 
 model Brand {
@@ -75,6 +84,8 @@ model Brand {
   name String @unique
   devices Device[]
   types BrandType[]
+
+  @@map("brands")
 }
 
 model Type {
@@ -82,6 +93,8 @@ model Type {
   name String @unique
   devices Device[]
   brands BrandType[]
+
+  @@map("types")
 }
 
 model BrandType {
@@ -92,6 +105,8 @@ model BrandType {
   typeId Int
 
   @@unique([brandId, typeId])
+
+  @@map("brand_types")
 }
 
 model Rating {
@@ -100,9 +115,10 @@ model Rating {
   comment String?
   user User @relation(fields: [userId], references: [id])
   userId Int
-  device Device @relation(fields: [deviceId], references: [id])
+  device Device @relation(fields: [deviceId], references: [id], onDelete: Cascade)
   deviceId Int
 
   @@unique([deviceId, userId])
+  @@map("ratings")
 }
 
