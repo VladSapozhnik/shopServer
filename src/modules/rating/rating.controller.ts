@@ -36,7 +36,7 @@ export class RatingController {
   }
 
   @Get(':deviceId/comments')
-  findOne(@Param('id', ParseIntPipe) deviceId: number) {
+  findOne(@Param('deviceId', ParseIntPipe) deviceId: number) {
     return this.ratingService.findOne(deviceId);
   }
 

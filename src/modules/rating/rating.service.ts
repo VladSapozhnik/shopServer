@@ -48,6 +48,15 @@ export class RatingService {
   async findOne(deviceId: number): Promise<Rating[]> {
     return this.prismaService.rating.findMany({
       where: { deviceId },
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+            role: true,
+          },
+        },
+      },
     });
   }
 
