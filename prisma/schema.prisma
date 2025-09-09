@@ -96,7 +96,8 @@ model BrandType {
 
 model Rating {
   id Int @default(autoincrement()) @id @unique
-  rate Int
+  score Int
+  comment String?
   user User @relation(fields: [userId], references: [id])
   userId Int
   device Device @relation(fields: [deviceId], references: [id])

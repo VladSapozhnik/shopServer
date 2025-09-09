@@ -6,33 +6,38 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
 import { UpdateRatingDto } from './dto/update-rating.dto';
+import { Authorized } from '../../decorators/authorized.decorator';
+import { Authorization } from '../../decorators/authorization.decorator';
+import type { User } from '@prisma/client';
 
 @Controller('rating')
 export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
 
-  @Post()
-  create(@Body() createRatingDto: CreateRatingDto) {
-    return this.ratingService.create(createRatingDto);
+  @Authorization()
+  @Post(':deviceId')
+  rateDevice(
+    @Authorized() user: User,
+    @Param('deviceId', ParseIntPipe)
+    deviceId: number,
+    @Body() createRatingDto: CreateRatingDto,
+  ) {
+    return this.ratingService.rateDevice(user, deviceId, createRatingDto);
   }
 
-  @Get()
-  findAll() {
-    return this.ratingService.findAll();
+  @Get(':deviceId')
+  getAverageRating(@Param('deviceId', ParseIntPipe) deviceId: number) {
+    return this.ratingService.getAverageRating(deviceId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.ratingService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRatingDto: UpdateRatingDto) {
-    return this.ratingService.update(+id, updateRatingDto);
+  @Get(':deviceId/comments')
+  findOne(@Param('id', ParseIntPipe) deviceId: number) {
+    return this.ratingService.findOne(deviceId);
   }
 
   @Delete(':id')
