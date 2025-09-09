@@ -6,55 +6,17 @@ import { PrismaService } from '../prisma/prisma.service';
 @Injectable()
 export class BasketService {
   constructor(private readonly prismaService: PrismaService) {}
-  async addDeviceToBasket(
-    user: User,
-    createBasketDto: CreateBasketDto,
-    quantity: number = 1,
-  ) {
-    const basket: Basket = await this.getBasket(user);
 
-    const basketDevice: BasketDevice | null =
-      await this.prismaService.basketDevice.findFirst({
-        where: {
-          basketId: basket.id,
-          deviceId: createBasketDto.deviceId,
-        },
-      });
-
-    if (basketDevice) {
-      await this.prismaService.basketDevice.update({
-        where: {
-          id: basketDevice.id,
-        },
-        data: {
-          quantity: {
-            increment: quantity,
-          },
-        },
-      });
-    } else {
-      await this.prismaService.basketDevice.create({
-        data: {
-          basketId: +basket.id,
-          deviceId: +createBasketDto.deviceId,
-        },
-      });
-    }
-
-    return this.getBasket(user);
-  }
-
-  async getBasket(user: User): Promise<Basket> {
+  private async findBasket(userId: number): Promise<Basket> {
     const basket: Basket | null = await this.prismaService.basket.findUnique({
-      where: {
-        userId: Number(user.id),
-      },
+      where: { userId },
       include: {
         user: {
           select: {
             name: true,
             email: true,
             role: true,
+            rating: true,
           },
         },
         devices: {
@@ -66,27 +28,73 @@ export class BasketService {
     });
 
     if (!basket) {
-      throw new NotFoundException('Корзина не найдена');
+      throw new NotFoundException('Корзина не найдена!');
     }
 
     return basket;
   }
 
-  async removeOneDevice(user: User, deviceId: number, quantity: number = 1) {
+  private async totalPrice(basketId: number): Promise<number> {
+    const result = await this.prismaService.$queryRaw<
+      {
+        total: number;
+      }[]
+    >`SELECT SUM(bd.quantity * d.price) AS TOTAL FROM "BasketDevice" bd JOIN "Device" d ON d.id = bd."deviceId" WHERE bd."basketId" = ${basketId}`;
+
+    return Number(result[0]?.total ?? 0);
+  }
+
+  async addDeviceToBasket(
+    user: User,
+    createBasketDto: CreateBasketDto,
+    quantity: number = 1,
+  ) {
     const basket: Basket = await this.getBasket(user);
 
+    await this.prismaService.basketDevice.upsert({
+      where: {
+        basketId_deviceId: {
+          basketId: basket.id,
+          deviceId: createBasketDto.deviceId,
+        },
+      },
+      create: {
+        basketId: basket.id,
+        deviceId: createBasketDto.deviceId,
+      },
+      update: {
+        quantity: {
+          increment: quantity,
+        },
+      },
+    });
+
+    return this.getBasket(user);
+  }
+
+  async getBasket(user: User): Promise<Basket & { totalPrice: number }> {
+    const basket: Basket = await this.findBasket(user.id);
+
+    const totalPrice: number = await this.totalPrice(basket.id);
+
+    return { totalPrice, ...basket };
+  }
+
+  async removeOneDevice(user: User, deviceId: number, quantity: number = 1) {
+    const basket: Basket = await this.findBasket(user.id);
+
     const basketDevice: BasketDevice | null =
-      await this.prismaService.basketDevice.findFirst({
-        where: { basketId: basket.id, deviceId },
+      await this.prismaService.basketDevice.findUnique({
+        where: { basketId_deviceId: { basketId: basket.id, deviceId } },
       });
 
     if (!basketDevice) {
-      throw new NotFoundException('Корзина не найдена!');
+      throw new NotFoundException('Устройство не найдено в корзине!');
     }
 
-    const newQuantity = basketDevice.quantity - quantity;
+    // const newQuantity: number = basketDevice.quantity - quantity;
 
-    if (newQuantity <= 0) {
+    if (basketDevice.quantity <= quantity) {
       await this.removeDevice(user, deviceId);
     } else {
       await this.prismaService.basketDevice.update({
@@ -103,14 +111,25 @@ export class BasketService {
   }
 
   async removeDevice(user: User, deviceId: number) {
-    const basket: Basket | null = await this.getBasket(user);
-
-    if (!basket) {
-      throw new NotFoundException('Корзина не найдена');
-    }
+    const basket: Basket | null = await this.findBasket(user.id);
 
     await this.prismaService.basketDevice.delete({
-      where: { basketId_deviceId: { basketId: basket.id, deviceId } },
+      where: {
+        basketId_deviceId: {
+          basketId: basket.id,
+          deviceId,
+        },
+      },
+    });
+
+    return this.getBasket(user);
+  }
+
+  async clearBasket(user: User) {
+    const basket: Basket | null = await this.findBasket(user.id);
+
+    await this.prismaService.basketDevice.deleteMany({
+      where: { basketId: basket.id },
     });
 
     return await this.getBasket(user);

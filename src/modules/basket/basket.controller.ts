@@ -39,11 +39,17 @@ export class BasketController {
   }
 
   @Authorization()
-  @Delete(':id')
+  @Delete('remove/:id')
   removeDevice(
     @Authorized() user: User,
     @Param('id', ParseIntPipe) deviceId: number,
   ) {
     return this.basketService.removeDevice(user, deviceId);
+  }
+
+  @Authorization()
+  @Delete('clear')
+  clearBasket(@Authorized() user: User) {
+    return this.basketService.clearBasket(user);
   }
 }

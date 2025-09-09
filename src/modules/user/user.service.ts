@@ -20,7 +20,6 @@ export class UserService {
   private readonly REFRESH_EXPIRES_IN: string;
   constructor(
     private readonly prisma: PrismaService,
-    // @InjectModel(User) private readonly userModel: typeof User,
     private readonly tokenService: TokenService,
     private readonly configService: ConfigService,
   ) {
