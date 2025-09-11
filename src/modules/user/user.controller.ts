@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Res,
+  UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -16,7 +17,9 @@ import { Authorized } from '../../decorators/authorized.decorator';
 import { Authorization } from '../../decorators/authorization.decorator';
 import type { Response } from 'express';
 import type { User } from '@prisma/client';
+import { MessageInterceptor } from '../../interceptors/message.interceptor';
 
+@UseInterceptors(MessageInterceptor)
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}

@@ -12,8 +12,10 @@ import {
 import { DeviceService } from './device.service';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { MessageInterceptor } from '../../interceptors/message.interceptor';
 
-@Controller('devices')
+@UseInterceptors(MessageInterceptor)
+@Controller('device')
 export class DeviceController {
   constructor(private readonly deviceService: DeviceService) {}
 

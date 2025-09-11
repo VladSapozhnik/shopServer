@@ -48,7 +48,7 @@ export class BasketService {
     user: User,
     createBasketDto: CreateBasketDto,
     quantity: number = 1,
-  ) {
+  ): Promise<Basket> {
     const basket: Basket = await this.getBasket(user);
 
     await this.prismaService.basketDevice.upsert({
@@ -80,7 +80,11 @@ export class BasketService {
     return { totalPrice, ...basket };
   }
 
-  async removeOneDevice(user: User, deviceId: number, quantity: number = 1) {
+  async removeOneDevice(
+    user: User,
+    deviceId: number,
+    quantity: number = 1,
+  ): Promise<Basket> {
     const basket: Basket = await this.findBasket(user.id);
 
     const basketDevice: BasketDevice | null =
@@ -91,8 +95,6 @@ export class BasketService {
     if (!basketDevice) {
       throw new NotFoundException('Устройство не найдено в корзине!');
     }
-
-    // const newQuantity: number = basketDevice.quantity - quantity;
 
     if (basketDevice.quantity <= quantity) {
       await this.removeDevice(user, deviceId);
@@ -110,7 +112,7 @@ export class BasketService {
     return await this.getBasket(user);
   }
 
-  async removeDevice(user: User, deviceId: number) {
+  async removeDevice(user: User, deviceId: number): Promise<Basket> {
     const basket: Basket | null = await this.findBasket(user.id);
 
     await this.prismaService.basketDevice.delete({
@@ -125,13 +127,13 @@ export class BasketService {
     return this.getBasket(user);
   }
 
-  async clearBasket(user: User) {
+  async clearAndGetBasket(user: User): Promise<Basket> {
     const basket: Basket | null = await this.findBasket(user.id);
 
     await this.prismaService.basketDevice.deleteMany({
       where: { basketId: basket.id },
     });
 
-    return await this.getBasket(user);
+    return this.getBasket(user);
   }
 }

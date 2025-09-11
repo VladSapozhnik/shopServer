@@ -3,18 +3,19 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
   Delete,
   ParseIntPipe,
+  UseInterceptors,
 } from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
-import { UpdateRatingDto } from './dto/update-rating.dto';
 import { Authorized } from '../../decorators/authorized.decorator';
 import { Authorization } from '../../decorators/authorization.decorator';
 import type { User } from '@prisma/client';
+import { MessageInterceptor } from '../../interceptors/message.interceptor';
 
+@UseInterceptors(MessageInterceptor)
 @Controller('rating')
 export class RatingController {
   constructor(private readonly ratingService: RatingService) {}
@@ -40,8 +41,8 @@ export class RatingController {
     return this.ratingService.findOne(deviceId);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.ratingService.remove(+id);
+  @Delete(':ratingId')
+  remove(@Param('ratingId', ParseIntPipe) ratingId: number) {
+    return this.ratingService.remove(ratingId);
   }
 }

@@ -4,10 +4,9 @@ import { UserController } from './user.controller';
 import { TokenModule } from '../token/token.module';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { PrismaModule } from '../prisma/prisma.module';
 
 @Module({
-  imports: [TokenModule, PrismaModule],
+  imports: [TokenModule],
   controllers: [UserController],
   providers: [UserService, JwtStrategy, JwtAuthGuard],
 })

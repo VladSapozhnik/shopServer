@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateRatingDto } from './dto/create-rating.dto';
-import { UpdateRatingDto } from './dto/update-rating.dto';
 import { Rating, User } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -60,7 +59,22 @@ export class RatingService {
     });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} rating`;
+  async remove(id: number): Promise<Rating & { message: string }> {
+    const rating: Rating | null = await this.prismaService.rating.findUnique({
+      where: { id },
+    });
+
+    if (!rating) {
+      throw new NotFoundException('Рейтинга по такому id не существует');
+    }
+
+    const removeDevice: Rating = await this.prismaService.rating.delete({
+      where: { id },
+    });
+
+    return {
+      message: 'Комментарий удален',
+      ...removeDevice,
+    };
   }
 }
