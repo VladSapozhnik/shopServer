@@ -8,10 +8,10 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get('jwt_secret'),
+        secret: configService.getOrThrow<string>('jwt.secret'),
         signOptions: {
           algorithm: 'HS256',
-          expiresIn: configService.get('jwt_access_token'),
+          expiresIn: configService.getOrThrow<string>('jwt.access_token'),
         },
         verifyOptions: {
           algorithms: ['HS256'],

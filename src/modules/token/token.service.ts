@@ -11,7 +11,7 @@ export class TokenService {
     private readonly configService: ConfigService,
   ) {
     this.JWT_REFRESH_TOKEN =
-      this.configService.getOrThrow<string>('jwt_refresh_token');
+      this.configService.getOrThrow<string>('jwt.refresh_token');
   }
   async generateToken(
     user: User,
