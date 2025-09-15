@@ -10,10 +10,10 @@ import {
 } from '@nestjs/common';
 import { RatingService } from './rating.service';
 import { CreateRatingDto } from './dto/create-rating.dto';
-import { Authorized } from '../../decorators/authorized.decorator';
-import { Authorization } from '../../decorators/authorization.decorator';
+import { Authorized } from '../../common/decorators/authorized.decorator';
+import { Authorization } from '../../common/decorators/authorization.decorator';
 import type { User } from '@prisma/client';
-import { MessageInterceptor } from '../../interceptors/message.interceptor';
+import { MessageInterceptor } from '../../common/interceptors/message.interceptor';
 
 @UseInterceptors(MessageInterceptor)
 @Controller('rating')

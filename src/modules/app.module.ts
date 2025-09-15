@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import configuration from '../configurations';
+import appConfig from '../common/configurations/app.config';
 import * as path from 'path';
 
 import { UserModule } from './user/user.module';
@@ -22,7 +22,7 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [configuration],
+      load: [appConfig],
     }),
     UserModule,
     BasketModule,
@@ -32,6 +32,7 @@ import { PrismaModule } from './prisma/prisma.module';
     BrandModule,
     FilesModule,
     TokenModule,
+    PrismaModule,
     PrismaModule,
   ],
 })

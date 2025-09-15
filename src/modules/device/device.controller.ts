@@ -12,7 +12,7 @@ import {
 import { DeviceService } from './device.service';
 import { CreateDeviceDto } from './dto/create-device.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { MessageInterceptor } from '../../interceptors/message.interceptor';
+import { MessageInterceptor } from '../../common/interceptors/message.interceptor';
 
 @UseInterceptors(MessageInterceptor)
 @Controller('device')

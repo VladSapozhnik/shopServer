@@ -29,10 +29,12 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Поле почта пустое' })
   email: string;
   @ApiProperty({
-    description: '',
+    description: 'Пароль пользователя!',
     example: 'test123',
     required: true,
     type: 'string',
+    minLength: 6,
+    maxLength: 128,
   })
   @IsString({ message: 'Поле пароль должно быть строкой' })
   @IsNotEmpty({ message: 'Поле пароль пустое' })

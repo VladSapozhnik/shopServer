@@ -32,16 +32,22 @@ export class CreateDeviceDto {
   @IsNotEmpty({ message: 'Поле brandID пустое' })
   @IsNumber({}, { message: 'Поле brainID не число' })
   brandId: number;
-  @Transform(({ value }) => parseInt(value as string))
-  @IsNotEmpty({ message: 'Поле typeID пустое' })
-  @IsNumber({}, { message: 'Поле typeID не число' })
   @ApiProperty({
     description: 'Id типа',
     example: '2',
     type: 'number',
     required: true,
   })
+  @Transform(({ value }) => parseInt(value as string))
+  @IsNotEmpty({ message: 'Поле typeID пустое' })
+  @IsNumber({}, { message: 'Поле typeID не число' })
   typeId: number;
+  @ApiPropertyOptional({
+    description: 'Загрузить картинку',
+    example: 'name.jpg',
+    type: 'string',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   img?: string;

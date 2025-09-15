@@ -10,7 +10,7 @@ import { TokenService } from '../token/token.service';
 import { LoginDto } from './dto/login.dto';
 import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
-import { isDev } from '../../utils/is-dev.util';
+import { isDev } from '../../common/utils/is-dev.util';
 import ms, { type StringValue } from 'ms';
 import { PrismaService } from '../prisma/prisma.service';
 import { User } from '@prisma/client';
@@ -78,6 +78,12 @@ export class UserService {
     const token: string = await this.auth(response, existUser);
 
     return { token };
+  }
+
+  logout(response: Response) {
+    this.setCookie(response, 'refreshToken', '0');
+
+    return true;
   }
 
   private async auth(response: Response, user: User): Promise<string> {

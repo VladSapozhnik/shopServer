@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, UseInterceptors } from '@nestjs/common';
 import { TypeService } from './type.service';
 import { CreateTypeDto } from './dto/create-type.dto';
-import { MessageInterceptor } from '../../interceptors/message.interceptor';
+import { MessageInterceptor } from '../../common/interceptors/message.interceptor';
 
 @UseInterceptors(MessageInterceptor)
 @Controller('type')

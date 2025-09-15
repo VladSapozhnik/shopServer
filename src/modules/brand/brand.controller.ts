@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
-import { MessageInterceptor } from '../../interceptors/message.interceptor';
+import { MessageInterceptor } from '../../common/interceptors/message.interceptor';
 import {
   ApiTags,
   ApiOperation,
@@ -17,7 +17,7 @@ import {
   ApiBadRequestResponse,
   ApiConflictResponse,
 } from '@nestjs/swagger';
-import { Message } from '../../decorators/message.decorator';
+import { Message } from '../../common/decorators/message.decorator';
 
 @ApiTags('Brand')
 @UseInterceptors(MessageInterceptor)

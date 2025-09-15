@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common';
 import { BasketService } from './basket.service';
 import { CreateBasketDto } from './dto/create-basket.dto';
-import { Authorization } from '../../decorators/authorization.decorator';
-import { Authorized } from '../../decorators/authorized.decorator';
+import { Authorization } from '../../common/decorators/authorization.decorator';
+import { Authorized } from '../../common/decorators/authorized.decorator';
 import type { User } from '@prisma/client';
-import { Message } from '../../decorators/message.decorator';
-import { MessageInterceptor } from '../../interceptors/message.interceptor';
+import { Message } from '../../common/decorators/message.decorator';
+import { MessageInterceptor } from '../../common/interceptors/message.interceptor';
 
 @UseInterceptors(MessageInterceptor)
 @Controller('basket')
