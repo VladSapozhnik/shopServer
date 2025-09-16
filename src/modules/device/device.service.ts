@@ -24,9 +24,7 @@ export class DeviceService {
       });
 
     if (existDevice) {
-      throw new ConflictException(
-        'Пользователь с таким названием уже существует',
-      );
+      throw new ConflictException('Device с таким названием уже существует');
     }
 
     const fileName: string = await this.filesService.createFile(image);

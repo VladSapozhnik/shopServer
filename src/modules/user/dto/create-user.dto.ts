@@ -42,3 +42,22 @@ export class CreateUserDto {
   @MinLength(6, { message: 'Поле пароль должно содержать больше 6 символов' })
   password: string;
 }
+
+export class AuthDataDto {
+  @ApiProperty({
+    description: 'Получаем JWT ACCESS TOKEN',
+    example: '$23b$10$e/M3s53IVXDiirt2kYx6iOCkBeA2Yuc6jc4bXtg...',
+  })
+  token: string;
+}
+
+export class CreateUserResponseDto {
+  @ApiProperty({
+    description: 'Сообщение о успешном запросе',
+    example: 'Операция выполнена успешно!',
+  })
+  message: string;
+
+  @ApiProperty({ type: AuthDataDto })
+  data: AuthDataDto;
+}
